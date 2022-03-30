@@ -10,7 +10,7 @@ public class TobySpring {
         user.setName("Andy");
         user.setPassword("pass");
 
-        UserDao userDao = new MyUserDao();
+        UserDao userDao = new UserDao(new MyConnectionMaker());
         userDao.add(user);
 
         User user2 = userDao.get(user.getId());
