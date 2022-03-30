@@ -2,7 +2,7 @@ package io.github.positoy;
 
 import java.sql.SQLException;
 
-public class TobySpring {
+public class UserDaoTest {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
         User user = new User();
@@ -10,7 +10,8 @@ public class TobySpring {
         user.setName("Andy");
         user.setPassword("pass");
 
-        UserDao userDao = new UserDao(new MyConnectionMaker());
+        UserDaoFactory userDaoFactory = new UserDaoFactory();
+        UserDao userDao = userDaoFactory.userDao();
         userDao.add(user);
 
         User user2 = userDao.get(user.getId());
