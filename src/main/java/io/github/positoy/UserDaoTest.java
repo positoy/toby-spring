@@ -1,5 +1,7 @@
 package io.github.positoy;
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
 import java.sql.SQLException;
 
 public class UserDaoTest {
@@ -10,8 +12,8 @@ public class UserDaoTest {
         user.setName("Andy");
         user.setPassword("pass");
 
-        UserDaoFactory userDaoFactory = new UserDaoFactory();
-        UserDao userDao = userDaoFactory.userDao();
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(UserDaoFactory.class);
+        UserDao userDao = context.getBean("userDao", UserDao.class);
         userDao.add(user);
 
         User user2 = userDao.get(user.getId());
