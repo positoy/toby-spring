@@ -2,22 +2,24 @@ package io.github.positoy;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class UserDaoFactory {
     @Bean
-    public ConnectionMaker countingConnectionMaker() {
-        CountingConnectionMaker countingConnectionMaker = new CountingConnectionMaker();
-        countingConnectionMaker.setConnectionMaker(connectionMaker());
-        return countingConnectionMaker;
-    }
-    @Bean
-    public ConnectionMaker connectionMaker() {
-        return new MyConnectionMaker(); // IoC (Inversion of Control) ; 프레임워크! 사용자가 라이브러리를 부른 것이 아니고, 프레임워크에 구성요소를 끼워넣음
+    public DataSource dataSource() {
+        SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
+        dataSource.setDriverClass(com.mysql.cj.jdbc.Driver.class);
+        dataSource.setUrl("jdbc:mysql://192.168.59.103:30000/toby");
+        dataSource.setUsername("root");
+        dataSource.setPassword("test1234");
+        return dataSource;
     }
 
     @Bean
     public UserDao userDao() {
-        return new UserDao(countingConnectionMaker());
+        return new UserDao(dataSource());
     }
 }

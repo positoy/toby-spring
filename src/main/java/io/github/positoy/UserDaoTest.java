@@ -11,19 +11,10 @@ public class UserDaoTest {
 
         AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(UserDaoFactory.class);
         UserDao userDao = context.getBean("userDao", UserDao.class);
-        userDao.add(new User("annotationId", "name", "pw"));
-        System.out.println(String.format("annotationContext userDao : %s", userDao));
-
-        CountingConnectionMaker countingConnectionMaker = context.getBean("countingConnectionMaker", CountingConnectionMaker.class);
-        System.out.println(countingConnectionMaker.getCounter());
-
+        userDao.add(new User("hello", "name", "pw"));
 
         ApplicationContext xmlContext = new GenericXmlApplicationContext("userDaoConfig.xml");
         userDao = xmlContext.getBean("userDao", UserDao.class);
-        userDao.add(new User("xmlId", "name", "pw"));
-        System.out.println(String.format("annotationContext userDao : %s", userDao));
-
-        countingConnectionMaker = xmlContext.getBean("countingConnectionMaker", CountingConnectionMaker.class);
-        System.out.println(countingConnectionMaker.getCounter());
+        userDao.add(new User("hi", "name", "pw"));
     }
 }

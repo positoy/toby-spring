@@ -2,11 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-    <bean id="connectionMaker" class="io.github.positoy.MyConnectionMaker"/>
-    <bean id="countingConnectionMaker" class="io.github.positoy.CountingConnectionMaker">
-        <property name="connectionMaker" ref="connectionMaker"/>
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+        <property name="driverClass" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://192.168.59.103:30000/toby"/>
+        <property name="username" value="root"/>
+        <property name="password" value="test1234"/>
     </bean>
     <bean id="userDao" class="io.github.positoy.UserDao">
-        <property name="connectionMaker" ref="countingConnectionMaker"/>
+        <property name="dataSource" ref="dataSource"/>
     </bean>
 </beans>
