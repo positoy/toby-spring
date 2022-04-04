@@ -7,7 +7,9 @@ import org.springframework.context.annotation.Configuration;
 public class UserDaoFactory {
     @Bean
     public ConnectionMaker countingConnectionMaker() {
-        return new CountingConnectionMaker(connectionMaker());
+        CountingConnectionMaker countingConnectionMaker = new CountingConnectionMaker();
+        countingConnectionMaker.setConnectionMaker(connectionMaker());
+        return countingConnectionMaker;
     }
     @Bean
     public ConnectionMaker connectionMaker() {

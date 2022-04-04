@@ -7,7 +7,7 @@ public class CountingConnectionMaker implements ConnectionMaker {
     int counter = 0;
     ConnectionMaker connectionMaker;
 
-    public CountingConnectionMaker(ConnectionMaker connectionMaker) {
+    public void setConnectionMaker(ConnectionMaker connectionMaker) {
         this.connectionMaker = connectionMaker;
     }
 

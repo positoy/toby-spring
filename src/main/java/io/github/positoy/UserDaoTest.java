@@ -8,7 +8,7 @@ public class UserDaoTest {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
         User user = new User();
-        user.setId("andy3");
+        user.setId("andy7");
         user.setName("Andy");
         user.setPassword("pass");
 
@@ -17,7 +17,7 @@ public class UserDaoTest {
         userDao.add(user);
 
         User user2 = new User();
-        user2.setId("andy4");
+        user2.setId("andy8");
         user2.setName("Andy");
         user2.setPassword("pass");
         userDao.add(user2);
