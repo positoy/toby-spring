@@ -8,7 +8,7 @@ public class UserDaoTest {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
 
         User user = new User();
-        user.setId("andy");
+        user.setId("andy3");
         user.setName("Andy");
         user.setPassword("pass");
 
@@ -16,7 +16,13 @@ public class UserDaoTest {
         UserDao userDao = context.getBean("userDao", UserDao.class);
         userDao.add(user);
 
-        User user2 = userDao.get(user.getId());
-        System.out.println(String.format("%s %s %s", user2.getId(), user2.getName(), user2.getPassword()));
+        User user2 = new User();
+        user2.setId("andy4");
+        user2.setName("Andy");
+        user2.setPassword("pass");
+        userDao.add(user2);
+
+        CountingConnectionMaker countingConnectionMaker = context.getBean("countingConnectionMaker", CountingConnectionMaker.class);
+        System.out.println(String.format("countingConnectionMaker counter : %d", countingConnectionMaker.getCounter()));
     }
 }
