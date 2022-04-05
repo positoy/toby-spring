@@ -2,22 +2,28 @@ package io.github.positoy;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.*;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.sql.SQLException;
 
 
 @Slf4j
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations = "/userDaoConfig.xml")
 public class UserDaoTest {
-    static UserDao userDao;
+    @Autowired
+    ApplicationContext context; // 애플리케이션 컨텍스트 자신도 빈으로 등록된다.
+    @Autowired
+    UserDao userDao;
 
     @BeforeClass
     public static void beforeAll() {
-        log.info("before all - initialize userDao");
-        ApplicationContext context = new GenericXmlApplicationContext("userDaoConfig.xml");
-        userDao = context.getBean("userDao", UserDao.class);
+        log.info("before all");
     }
 
     @AfterClass
@@ -27,6 +33,11 @@ public class UserDaoTest {
 
     @Before
     public void beforeEach() throws SQLException {
+//        userDao = context.getBean("userDao", UserDao.class); // @Autowired
+//        System.out.println("context: " + context);
+//        System.out.println("userDao: " + userDao);
+//        System.out.println("this: " + this); // context, userDao 는 모든 테스트에서 동일하지만, 테스트 클래스는 매번 다시 만들기 때문에 this 는 다르다.
+
         log.info("before each - clear db");
         userDao.deleteAll();
 
