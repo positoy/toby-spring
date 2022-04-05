@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.sql.SQLException;
@@ -18,7 +19,7 @@ class UserDaoTest {
     @BeforeAll
     static void beforeAll() {
         log.info("before all - initialize userDao");
-        ApplicationContext context = new AnnotationConfigApplicationContext(UserDaoFactory.class);
+        ApplicationContext context = new GenericXmlApplicationContext("userDaoConfig.xml");
         userDao = context.getBean("userDao", UserDao.class);
     }
 
