@@ -1,5 +1,7 @@
 package io.github.positoy;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -32,20 +34,21 @@ public class UserDao {
         c.close();
     }
 
-    public User get(String id) throws SQLException {
+    public User get(String id) throws SQLException, EmptyResultDataAccessException {
         Connection c = dataSource.getConnection();
         PreparedStatement ps = c.prepareStatement("select * from users where id=?");
         ps.setString(1, id);
 
         ResultSet rs = ps.executeQuery();
-        rs.next();
-
-        User user = new User(rs.getString("id"), rs.getString("name"), rs.getString("password"));
-
+        User user = null;
+        if (rs.next()) {
+            user = new User(rs.getString("id"), rs.getString("name"), rs.getString("password"));
+        }
+        if (user == null)
+            throw new EmptyResultDataAccessException(1);
         rs.close();
         ps.close();
         c.close();
-
         return user;
     }
 
@@ -57,5 +60,24 @@ public class UserDao {
         System.out.println("deleted " + deleted);
         ps.close();
         c.close();
+    }
+
+    public void deleteAll() throws SQLException {
+        Connection c = dataSource.getConnection();
+        PreparedStatement ps = c.prepareStatement("delete from users");
+        int deleted = ps.executeUpdate();
+        ps.close();
+        c.close();
+    }
+
+    public int getCount() throws SQLException {
+        Connection c = dataSource.getConnection();
+        PreparedStatement ps = c.prepareStatement("select count(1) from users");
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        int count = rs.getInt("count(1)");
+        ps.close();
+        c.close();
+        return count;
     }
 }
