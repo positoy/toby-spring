@@ -7,8 +7,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collections;
 
 public class UserDao extends SqlOperation {
 
@@ -24,18 +22,50 @@ public class UserDao extends SqlOperation {
     }
 
     public void add(User user) throws SQLException {
-        insert(new AddUserStatement(user));
+        class AddUserStatement implements StatementStrategy {
+            @Override
+            public PreparedStatement makeStatement(Connection c) throws SQLException {
+                PreparedStatement ps = c.prepareStatement("insert into users(id,name,password) values(?,?,?)");
+                ps.setString(1, user.getId());
+                ps.setString(2, user.getName());
+                ps.setString(3, user.getPassword());
+                return ps;
+            }
+        }
+        insert(new AddUserStatement());
     }
 
     public User get(String id) throws SQLException, EmptyResultDataAccessException {
-        return select(new GetUserStatement(id));
+        class GetUserStatement implements StatementStrategy {
+            @Override
+            public PreparedStatement makeStatement(Connection c) throws SQLException {
+                PreparedStatement ps = c.prepareStatement("select * from users where id=?");
+                ps.setString(1, id);
+                return ps;
+            }
+        }
+        return select(new GetUserStatement());
     }
 
     public void remove(String id) throws SQLException {
-        delete(new DeleteUserStatement(id));
+        class DeleteUserStatement implements StatementStrategy {
+            @Override
+            public PreparedStatement makeStatement(Connection c) throws SQLException {
+                PreparedStatement ps = c.prepareStatement("delete from users where id=?");
+                ps.setString(1, id);
+                return ps;
+            }
+        }
+        delete(new DeleteUserStatement());
     }
 
     public void removeAll() throws SQLException {
+        class DeleteAllStatement implements StatementStrategy {
+            @Override
+            public PreparedStatement makeStatement(Connection c) throws SQLException {
+                return c.prepareStatement("delete from users");
+            }
+        }
         delete(new DeleteAllStatement());
     }
 
