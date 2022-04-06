@@ -5,7 +5,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserDao extends SqlOperation {
@@ -66,13 +65,11 @@ public class UserDao extends SqlOperation {
     }
 
     public int getCount() throws SQLException {
-        Connection c = dataSource.getConnection();
-        PreparedStatement ps = c.prepareStatement("select count(1) from users");
-        ResultSet rs = ps.executeQuery();
-        rs.next();
-        int count = rs.getInt("count(1)");
-        ps.close();
-        c.close();
-        return count;
+        return workWithStatementStrategy(new StatementStrategy() {
+            @Override
+            public PreparedStatement makeStatement(Connection c) throws SQLException {
+                return c.prepareStatement("select count(1) from users");
+            }
+        });
     }
 }

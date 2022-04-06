@@ -122,4 +122,15 @@ public class SqlOperation {
         }
         System.out.println("deleted " + deleted);
     }
+
+    int workWithStatementStrategy(StatementStrategy ss) throws SQLException {
+        Connection c = dataSource.getConnection();
+        PreparedStatement ps = ss.makeStatement(c);
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        int count = rs.getInt("count(1)");
+        ps.close();
+        c.close();
+        return count;
+    }
 }
