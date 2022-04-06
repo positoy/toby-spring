@@ -24,47 +24,19 @@ public class UserDao extends SqlOperation {
     }
 
     public void add(User user) throws SQLException {
-        insert(new StatementStrategy() {
-                   @Override
-                   public PreparedStatement makeStatement(Connection c) throws SQLException {
-                       PreparedStatement ps = c.prepareStatement("insert into users(id,name,password) values(?,?,?)");
-                       ps.setString(1, user.getId());
-                       ps.setString(1, user.getName());
-                       ps.setString(1, user.getPassword());
-                       return ps;
-                   }
-               });
+        insert(new AddUserStatement(user));
     }
 
     public User get(String id) throws SQLException, EmptyResultDataAccessException {
-        return select(new StatementStrategy() {
-            @Override
-            public PreparedStatement makeStatement(Connection c) throws SQLException {
-                PreparedStatement ps = c.prepareStatement("select * from users where id=?");
-                ps.setString(1, id);
-                return ps;
-            }
-        });
+        return select(new GetUserStatement(id));
     }
 
     public void remove(String id) throws SQLException {
-        delete(new StatementStrategy() {
-            @Override
-            public PreparedStatement makeStatement(Connection c) throws SQLException {
-                PreparedStatement ps = c.prepareStatement("delete from users where id=?");
-                ps.setString(1, id);
-                return ps;
-            }
-        });
+        delete(new DeleteUserStatement(id));
     }
 
     public void removeAll() throws SQLException {
-        delete(new StatementStrategy() {
-            @Override
-            public PreparedStatement makeStatement(Connection c) throws SQLException {
-                return c.prepareStatement("delete from users");
-            }
-        });
+        delete(new DeleteAllStatement());
     }
 
     public int getCount() throws SQLException {
