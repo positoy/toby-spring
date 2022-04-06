@@ -35,31 +35,77 @@ public class UserDao {
     }
 
     public User get(String id) throws SQLException, EmptyResultDataAccessException {
-        Connection c = dataSource.getConnection();
-        PreparedStatement ps = c.prepareStatement("select * from users where id=?");
-        ps.setString(1, id);
-
-        ResultSet rs = ps.executeQuery();
+        Connection c = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
         User user = null;
-        if (rs.next()) {
-            user = new User(rs.getString("id"), rs.getString("name"), rs.getString("password"));
+        try {
+            c = dataSource.getConnection();
+            ps = c.prepareStatement("select * from users where id=?");
+            ps.setString(1, id);
+            rs = ps.executeQuery();
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+            try {
+                if (rs != null ) {
+                    if (rs.next()) {
+                        user = new User(rs.getString("id"), rs.getString("name"), rs.getString("password"));
+                    }
+                    rs.close();
+                }
+            } catch (SQLException e) {
+                throw e;
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                }
+            }
+            if (c != null) {
+                try {
+                    c.close();
+                } catch (SQLException e) {
+                }
+            }
         }
+
         if (user == null)
             throw new EmptyResultDataAccessException(1);
-        rs.close();
-        ps.close();
-        c.close();
+
         return user;
     }
 
     public void delete(String id) throws SQLException {
-        Connection c = dataSource.getConnection();
-        PreparedStatement ps = c.prepareStatement("delete from users where id=?");
-        ps.setString(1, id);
-        int deleted = ps.executeUpdate();
+        Connection c = null;
+        PreparedStatement ps = null;
+        int deleted = 0;
+        try {
+            c = dataSource.getConnection();
+            ps = c.prepareStatement("delete from users where id=?");
+            ps.setString(1, id);
+            deleted = ps.executeUpdate();
+        } catch (SQLException e) {
+            throw e;
+        } finally {
+
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+
+                }
+            }
+            if (c != null) {
+                try {
+                    c.close();
+                } catch (SQLException e) {
+
+                }
+            }
+        }
         System.out.println("deleted " + deleted);
-        ps.close();
-        c.close();
     }
 
     public void deleteAll() throws SQLException {
