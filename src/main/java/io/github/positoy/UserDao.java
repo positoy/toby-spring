@@ -7,9 +7,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collections;
 
-public class UserDao {
-    DataSource dataSource;
+public class UserDao extends SqlOperation {
 
     public UserDao() {
     }
@@ -23,97 +24,47 @@ public class UserDao {
     }
 
     public void add(User user) throws SQLException {
-        Connection c = dataSource.getConnection();
-        PreparedStatement ps = c.prepareStatement("insert into users(id,name,password) values(?,?,?)");
-        ps.setString(1, user.getId());
-        ps.setString(2, user.getName());
-        ps.setString(3, user.getPassword());
-        ps.executeUpdate();
-        ps.close();
-
-        c.close();
+        insert(new StatementStrategy() {
+                   @Override
+                   public PreparedStatement makeStatement(Connection c) throws SQLException {
+                       PreparedStatement ps = c.prepareStatement("insert into users(id,name,password) values(?,?,?)");
+                       ps.setString(1, user.getId());
+                       ps.setString(1, user.getName());
+                       ps.setString(1, user.getPassword());
+                       return ps;
+                   }
+               });
     }
 
     public User get(String id) throws SQLException, EmptyResultDataAccessException {
-        Connection c = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        User user = null;
-        try {
-            c = dataSource.getConnection();
-            ps = c.prepareStatement("select * from users where id=?");
-            ps.setString(1, id);
-            rs = ps.executeQuery();
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            try {
-                if (rs != null ) {
-                    if (rs.next()) {
-                        user = new User(rs.getString("id"), rs.getString("name"), rs.getString("password"));
-                    }
-                    rs.close();
-                }
-            } catch (SQLException e) {
-                throw e;
+        return select(new StatementStrategy() {
+            @Override
+            public PreparedStatement makeStatement(Connection c) throws SQLException {
+                PreparedStatement ps = c.prepareStatement("select * from users where id=?");
+                ps.setString(1, id);
+                return ps;
             }
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (c != null) {
-                try {
-                    c.close();
-                } catch (SQLException e) {
-                }
-            }
-        }
-
-        if (user == null)
-            throw new EmptyResultDataAccessException(1);
-
-        return user;
+        });
     }
 
-    public void delete(String id) throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-        int deleted = 0;
-        try {
-            c = dataSource.getConnection();
-            ps = c.prepareStatement("delete from users where id=?");
-            ps.setString(1, id);
-            deleted = ps.executeUpdate();
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {
-
-                }
+    public void remove(String id) throws SQLException {
+        delete(new StatementStrategy() {
+            @Override
+            public PreparedStatement makeStatement(Connection c) throws SQLException {
+                PreparedStatement ps = c.prepareStatement("delete from users where id=?");
+                ps.setString(1, id);
+                return ps;
             }
-            if (c != null) {
-                try {
-                    c.close();
-                } catch (SQLException e) {
-
-                }
-            }
-        }
-        System.out.println("deleted " + deleted);
+        });
     }
 
-    public void deleteAll() throws SQLException {
-        Connection c = dataSource.getConnection();
-        PreparedStatement ps = c.prepareStatement("delete from users");
-        int deleted = ps.executeUpdate();
-        ps.close();
-        c.close();
+    public void removeAll() throws SQLException {
+        delete(new StatementStrategy() {
+            @Override
+            public PreparedStatement makeStatement(Connection c) throws SQLException {
+                return c.prepareStatement("delete from users");
+            }
+        });
     }
 
     public int getCount() throws SQLException {

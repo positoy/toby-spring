@@ -39,14 +39,14 @@ public class UserDaoTest {
 //        System.out.println("this: " + this); // context, userDao 는 모든 테스트에서 동일하지만, 테스트 클래스는 매번 다시 만들기 때문에 this 는 다르다.
 
         log.info("before each - clear db");
-        userDao.deleteAll();
+        userDao.removeAll();
 
     }
 
     @After
     public void afterEach() throws SQLException {
         log.info("after each - clear db");
-        userDao.deleteAll();
+        userDao.removeAll();
     }
 
     @Test
@@ -70,7 +70,7 @@ public class UserDaoTest {
         userDao.add(new User("test2", "name", "pw"));
         Assert.assertEquals(3, userDao.getCount());
 
-        userDao.deleteAll();
+        userDao.removeAll();
         Assert.assertEquals(0, userDao.getCount());
 
         userDao.get("unknown_id");
