@@ -11,10 +11,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.sql.SQLException;
 
-
 @Slf4j
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = UserDaoFactory.class)
+@ContextConfiguration(value = "/userDaoConfig.xml")
 public class UserDaoTest {
     @Autowired
     ApplicationContext context; // 애플리케이션 컨텍스트 자신도 빈으로 등록된다.

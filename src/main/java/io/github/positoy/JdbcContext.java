@@ -7,15 +7,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
 
-public class SqlOperation {
+public class JdbcContext {
     DataSource dataSource;
 
-    public SqlOperation() {
+    public JdbcContext() {
     }
 
-    public SqlOperation(DataSource dataSource) {
+    public JdbcContext(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -23,35 +22,7 @@ public class SqlOperation {
         this.dataSource = dataSource;
     }
 
-    public void insert(StatementStrategy ss) throws SQLException {
-        Connection c = null;
-        PreparedStatement ps = null;
-        try {
-            c = dataSource.getConnection();
-            ps = ss.makeStatement(c);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (ps != null) {
-                try {
-                    ps.close();
-                } catch (SQLException e) {
-
-                }
-            }
-            if (c != null) {
-                try {
-                    c.close();
-                } catch (SQLException e) {
-
-                }
-            }
-
-        }
-    }
-
-    public User select(StatementStrategy ss) throws SQLException {
+    public User workWithStatementStrategyUser(StatementStrategy ss) throws SQLException {
         Connection c = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -93,14 +64,14 @@ public class SqlOperation {
         return user;
     }
 
-    public void delete(StatementStrategy ss) throws SQLException {
+    public void workWithStatementStrategyVoid(StatementStrategy ss) throws SQLException {
         Connection c = null;
         PreparedStatement ps = null;
-        int deleted = 0;
+        int updated = 0;
         try {
             c = dataSource.getConnection();
             ps = ss.makeStatement(c);
-            deleted = ps.executeUpdate();
+            updated = ps.executeUpdate();
         } catch (SQLException e) {
             throw e;
         } finally {
@@ -120,7 +91,7 @@ public class SqlOperation {
                 }
             }
         }
-        System.out.println("deleted " + deleted);
+        System.out.println("updated: " + updated);
     }
 
     int workWithStatementStrategy(StatementStrategy ss) throws SQLException {
@@ -128,7 +99,7 @@ public class SqlOperation {
         PreparedStatement ps = ss.makeStatement(c);
         ResultSet rs = ps.executeQuery();
         rs.next();
-        int count = rs.getInt("count(1)");
+        int count = rs.getInt(1);
         ps.close();
         c.close();
         return count;
